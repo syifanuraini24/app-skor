@@ -4,17 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SportApp - Registrasi & Skor</title>
+  
+  <!-- CSS Libraries -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
   <style>
-    body { background-color: #f8f9fa; }
-    .score-box { font-size: 4rem; font-weight: bold; text-align: center; }
-    .btn-score { font-size: 2rem; width: 100%; border-radius: 10px; }
-    .kpi-card { border-left: 5px solid; border-radius: 8px; }
+    /* Styling Global & Neumorphism/Glassmorphism */
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .btn {
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .score-box { 
+      font-size: 5rem; 
+      font-weight: 700; 
+      text-align: center; 
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-score { font-size: 2rem; width: 100%; border-radius: 12px; }
+    
+    .navbar {
+      background: rgba(33, 37, 41, 0.9) !important;
+      backdrop-filter: blur(10px);
+    }
+
+    .kpi-card { border-left: 5px solid; }
     .kpi-blue { border-left-color: #4e73df; }
     .kpi-green { border-left-color: #1cc88a; }
     .kpi-title { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
     .kpi-value { font-size: 1.8rem; font-weight: bold; color: #5a5c69; }
+    
     .nav-link, .pointer { cursor: pointer; }
     .section-view { display: none; }
   </style>
@@ -22,41 +70,42 @@
 <body>
 
   <!-- NAVBAR PUBLIK -->
-  <nav class="navbar navbar-dark bg-primary mb-4 shadow-sm" id="publicNav">
+  <nav class="navbar navbar-dark mb-4 shadow-sm" id="publicNav" style="background: linear-gradient(90deg, #4e73df 0%, #224abe 100%) !important;">
     <div class="container">
-      <span class="navbar-brand fw-bold pointer" onclick="switchView('homeSection')">🏆 SportApp</span>
-      <button class="btn btn-light btn-sm fw-bold" onclick="switchView('loginSection')">Admin Login</button>
+      <span class="navbar-brand fw-bold pointer" onclick="switchView('homeSection')"><i class="fa-solid fa-trophy text-warning"></i> SportApp</span>
+      <button class="btn btn-light btn-sm fw-bold text-primary" onclick="switchView('loginSection')"><i class="fa-solid fa-lock"></i> Admin Login</button>
     </div>
   </nav>
 
   <!-- NAVBAR ADMIN -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm section-view" id="adminNav">
     <div class="container">
-      <span class="navbar-brand fw-bold">⚙️ Admin Panel</span>
+      <span class="navbar-brand fw-bold text-warning"><i class="fa-solid fa-user-shield"></i> Admin Panel</span>
       <div class="d-flex">
         <ul class="navbar-nav flex-row gap-3">
           <li class="nav-item"><a class="nav-link active fw-bold" id="navTracker" onclick="showAdmin('trackerSection')">Catat Skor</a></li>
           <li class="nav-item"><a class="nav-link" id="navDashboard" onclick="showAdmin('dashboardSection')">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link text-danger" onclick="logout()">Keluar</a></li>
+          <li class="nav-item"><a class="nav-link text-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></a></li>
         </ul>
       </div>
     </div>
   </nav>
 
   <!-- 1. HALAMAN UTAMA -->
-  <div id="homeSection" class="container text-center py-5">
-    <h2 class="mb-4 fw-bold">Selamat Datang di Arena!</h2>
-    <p class="text-muted mb-5">Silakan daftarkan tim kamu sebelum bertanding.</p>
-    <button class="btn btn-primary btn-lg px-5 py-3 shadow-sm" onclick="switchView('registrasiSection')">
-      📝 Registrasi Pertandingan
+  <div id="homeSection" class="container text-center py-5" data-aos="fade-up">
+    <h1 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-medal text-warning"></i> Selamat Datang di Arena!</h1>
+    <p class="text-secondary mb-5 fs-5">Silakan daftarkan tim kamu sebelum bertanding.</p>
+    <button class="btn btn-primary btn-lg px-5 py-3 shadow" onclick="switchView('registrasiSection')">
+      <i class="fa-solid fa-pen-to-square"></i> Registrasi Pertandingan
     </button>
   </div>
 
   <!-- 2. FORM REGISTRASI (PUBLIK) -->
-  <div id="registrasiSection" class="container section-view mx-auto" style="max-width: 500px;">
-    <div class="card shadow-sm">
+  <div id="registrasiSection" class="container section-view mx-auto" style="max-width: 500px;" data-aos="zoom-in">
+    <div class="card">
       <div class="card-body p-4">
-        <h4 class="mb-4 text-center">Form Registrasi</h4>
+        <h4 class="mb-4 text-center fw-bold text-primary">Form Registrasi</h4>
+        
         <div class="mb-3">
           <label class="form-label fw-bold">Jenis Olahraga</label>
           <select id="regOlahraga" class="form-select"><option>Badminton</option><option>Padel</option><option>Tenis</option></select>
@@ -73,72 +122,79 @@
           <label class="form-label fw-bold">Pemain / Tim B</label>
           <input type="text" id="regTimB" class="form-control" placeholder="Contoh: Andi & Dina">
         </div>
-        <button class="btn btn-success w-100 btn-lg" id="btnReg" onclick="submitRegistrasi()">Daftarkan Pertandingan</button>
+        <button class="btn btn-primary w-100 btn-lg shadow-sm mb-4" id="btnReg" onclick="submitRegistrasi()">Daftarkan Sekarang</button>
+        
+        <hr class="text-secondary">
+        <h6 class="mb-3 text-center text-secondary">Atau Upload File Excel Bulk Registrasi</h6>
+        <div class="mb-3">
+          <input type="file" id="fileUpload" class="form-control form-control-sm" accept=".xlsx, .xls, .csv">
+        </div>
+        <button class="btn btn-outline-success w-100" id="btnUpload" onclick="prosesUploadExcel()"><i class="fa-solid fa-file-excel"></i> Upload Excel</button>
       </div>
     </div>
   </div>
 
   <!-- 3. HALAMAN LOGIN -->
-  <div id="loginSection" class="container section-view mx-auto" style="max-width: 400px;">
-    <div class="card shadow-sm">
+  <div id="loginSection" class="container section-view mx-auto" style="max-width: 400px;" data-aos="flip-left">
+    <div class="card">
       <div class="card-body p-4 text-center">
-        <h4 class="mb-4">🔒 Akses Admin</h4>
+        <h4 class="mb-4 fw-bold text-dark"><i class="fa-solid fa-lock text-primary"></i> Akses Admin</h4>
         <input type="text" id="username" class="form-control mb-3" placeholder="Username">
         <input type="password" id="password" class="form-control mb-4" placeholder="Password">
-        <button class="btn btn-dark w-100 btn-lg mb-2" id="btnLogin" onclick="prosesLogin()">Masuk</button>
-        <button class="btn btn-outline-secondary w-100" onclick="switchView('homeSection')">Batal</button>
+        <button class="btn btn-dark w-100 btn-lg mb-2 shadow-sm" id="btnLogin" onclick="prosesLogin()">Masuk</button>
+        <button class="btn btn-light w-100 text-secondary" onclick="switchView('homeSection')">Kembali</button>
       </div>
     </div>
   </div>
 
   <!-- 4. PENCATAT SKOR (ADMIN) -->
-  <div id="trackerSection" class="container section-view mx-auto" style="max-width: 500px;">
-    <div class="mb-3"><select id="trkOlahraga" class="form-select form-select-lg shadow-sm"><option>Badminton</option><option>Padel</option><option>Tenis</option></select></div>
+  <div id="trackerSection" class="container section-view mx-auto" style="max-width: 500px;" data-aos="fade-up">
+    <div class="mb-4"><select id="trkOlahraga" class="form-select form-select-lg shadow-sm"><option>Badminton</option><option>Padel</option><option>Tenis</option></select></div>
     <div class="row g-3">
       <div class="col-6">
-        <div class="card shadow-sm h-100 text-center p-2">
+        <div class="card h-100 text-center p-3">
           <input type="text" id="trkTimA" class="form-control text-center mb-2 fw-bold" placeholder="Tim A">
           <div class="score-box text-primary" id="scoreA">0</div>
-          <button class="btn btn-primary btn-score mb-2" onclick="updateScore('A', 1)">+</button>
-          <button class="btn btn-outline-danger btn-score" onclick="updateScore('A', -1)">-</button>
+          <button class="btn btn-primary btn-score mb-2 shadow-sm" onclick="updateScore('A', 1)">+</button>
+          <button class="btn btn-outline-danger btn-score shadow-sm" onclick="updateScore('A', -1)">-</button>
         </div>
       </div>
       <div class="col-6">
-        <div class="card shadow-sm h-100 text-center p-2">
+        <div class="card h-100 text-center p-3">
           <input type="text" id="trkTimB" class="form-control text-center mb-2 fw-bold" placeholder="Tim B">
           <div class="score-box text-success" id="scoreB">0</div>
-          <button class="btn btn-success btn-score mb-2" onclick="updateScore('B', 1)">+</button>
-          <button class="btn btn-outline-danger btn-score" onclick="updateScore('B', -1)">-</button>
+          <button class="btn btn-success btn-score mb-2 shadow-sm" onclick="updateScore('B', 1)">+</button>
+          <button class="btn btn-outline-danger btn-score shadow-sm" onclick="updateScore('B', -1)">-</button>
         </div>
       </div>
     </div>
     <div class="mt-4 pb-5">
-      <button class="btn btn-dark w-100 btn-lg mb-2 shadow-sm" onclick="simpanSkor()" id="btnSimpan">💾 Simpan Hasil</button>
-      <button class="btn btn-outline-secondary w-100 btn-lg" onclick="resetScore()">🔄 Reset</button>
+      <button class="btn btn-dark w-100 btn-lg mb-2 shadow-sm" onclick="simpanSkor()" id="btnSimpan"><i class="fa-solid fa-floppy-disk"></i> Simpan Hasil Akhir</button>
+      <button class="btn btn-outline-secondary w-100 btn-lg bg-white" onclick="resetScore()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
     </div>
   </div>
 
   <!-- 5. DASHBOARD (ADMIN) -->
-  <div id="dashboardSection" class="container section-view">
-    <div id="loadingData" class="text-center py-5"><div class="spinner-border text-primary"></div><p>Memuat data...</p></div>
+  <div id="dashboardSection" class="container section-view" data-aos="fade-up">
+    <div id="loadingData" class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 fw-bold">Memuat data analitik...</p></div>
     
     <div id="dashboardContent" style="display: none;">
       <div class="row g-3 mb-4">
         <div class="col-md-6 col-12">
-          <div class="card shadow-sm kpi-card kpi-blue h-100"><div class="card-body"><div class="kpi-title text-primary">Total Pertandingan</div><div class="kpi-value" id="kpiTotal">0</div></div></div>
+          <div class="card kpi-card kpi-blue h-100"><div class="card-body"><div class="kpi-title text-primary"><i class="fa-solid fa-check-to-slot"></i> Total Pertandingan</div><div class="kpi-value" id="kpiTotal">0</div></div></div>
         </div>
         <div class="col-md-6 col-12">
-          <div class="card shadow-sm kpi-card kpi-green h-100"><div class="card-body"><div class="kpi-title text-success">Terpopuler</div><div class="kpi-value" id="kpiPopuler">-</div></div></div>
+          <div class="card kpi-card kpi-green h-100"><div class="card-body"><div class="kpi-title text-success"><i class="fa-solid fa-fire"></i> Terpopuler</div><div class="kpi-value" id="kpiPopuler">-</div></div></div>
         </div>
       </div>
 
       <!-- Tabel Registrasi -->
-      <div class="card shadow-sm mb-4 border-warning">
-        <div class="card-header bg-warning fw-bold text-dark">📋 Antrean Pendaftar Baru</div>
+      <div class="card mb-4" style="border: 2px solid #ffc107;">
+        <div class="card-header bg-warning fw-bold text-dark"><i class="fa-solid fa-clipboard-list"></i> Antrean Pendaftar Baru</div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-light"><tr><th>Olahraga & Kategori</th><th>Tim A</th><th>Tim B</th></tr></thead>
+            <table class="table table-hover align-middle mb-0 text-center">
+              <thead class="table-light"><tr><th>Olahraga</th><th>Kategori</th><th>Tim A</th><th>Tim B</th></tr></thead>
               <tbody id="tabelPendaftar"></tbody>
             </table>
           </div>
@@ -147,11 +203,11 @@
 
       <!-- Grafik & Riwayat -->
       <div class="row g-3 mb-5">
-        <div class="col-md-5 col-12"><div class="card shadow-sm h-100"><div class="card-body"><h6 class="fw-bold mb-3">Distribusi</h6><canvas id="pieChart"></canvas></div></div></div>
-        <div class="col-md-7 col-12">
-          <div class="card shadow-sm h-100">
+        <div class="col-md-4 col-12"><div class="card h-100"><div class="card-body"><h6 class="fw-bold mb-3 text-secondary text-center">Distribusi Olahraga</h6><canvas id="pieChart"></canvas></div></div></div>
+        <div class="col-md-8 col-12">
+          <div class="card h-100">
             <div class="card-body p-0">
-              <h6 class="fw-bold p-3 mb-0 border-bottom">Riwayat 5 Hasil Terakhir</h6>
+              <h6 class="fw-bold p-3 mb-0 border-bottom text-secondary"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat 5 Hasil Terakhir</h6>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                   <tbody id="tabelRiwayat"></tbody>
@@ -165,8 +221,11 @@
   </div>
 
   <script>
+    // INISIALISASI ANIMASI
+    AOS.init({ duration: 800, once: true });
+
     // MASUKKAN URL WEB APP MILIKMU DI BAWAH INI
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz22_SBJMgqZpLc-kqT9rIyLbSbut6NO6ykXl7mZlrcvnDIwqIFTgKmLqP-Q3Qslq9F/exec';
+    const scriptURL = 'https://script.google.com/macros/library/d/1_REDhC7R6w6QsMuVu-z4-kHGu0MMkHszbsDPw7bg9ponA9uyO3q97hU_/1';
     
     let scoreA = 0; let scoreB = 0; let chartPieInstance = null;
 
@@ -179,6 +238,7 @@
         document.getElementById('publicNav').style.display = 'block';
         document.getElementById('adminNav').style.display = 'none';
       }
+      setTimeout(() => AOS.refresh(), 100);
     }
 
     function showAdmin(sectionId) {
@@ -191,14 +251,19 @@
       document.getElementById('navTracker').classList.toggle('active', sectionId === 'trackerSection');
       document.getElementById('navDashboard').classList.toggle('active', sectionId === 'dashboardSection');
       if (sectionId === 'dashboardSection') loadDashboard();
+      setTimeout(() => AOS.refresh(), 100);
     }
 
-    // Registrasi Publik
+    // Pendaftaran Manual
     function submitRegistrasi() {
       const btn = document.getElementById('btnReg');
       const timA = document.getElementById('regTimA').value;
       const timB = document.getElementById('regTimB').value;
-      if(!timA || !timB) return alert('Nama Tim A dan Tim B wajib diisi!');
+      
+      if(!timA || !timB) {
+        Swal.fire('Oops!', 'Nama Tim A dan Tim B wajib diisi!', 'warning');
+        return;
+      }
 
       btn.innerText = 'Mendaftarkan...'; btn.disabled = true;
       const fd = new FormData();
@@ -208,11 +273,57 @@
       fd.append('timA', timA); fd.append('timB', timB);
 
       fetch(scriptURL, { method: 'POST', body: fd })
-        .then(() => { alert('Pendaftaran Berhasil! Menunggu pertandingan.'); switchView('homeSection'); btn.innerText = 'Daftarkan Pertandingan'; btn.disabled = false; document.getElementById('regTimA').value=''; document.getElementById('regTimB').value=''; })
-        .catch(() => { alert('Gagal Mendaftar.'); btn.innerText = 'Daftarkan Pertandingan'; btn.disabled = false; });
+        .then(() => { 
+          Swal.fire('Berhasil!', 'Pendaftaran tim Anda sukses. Menunggu pertandingan.', 'success');
+          switchView('homeSection'); 
+          btn.innerText = 'Daftarkan Sekarang'; btn.disabled = false; 
+          document.getElementById('regTimA').value=''; document.getElementById('regTimB').value=''; 
+        })
+        .catch(() => { 
+          Swal.fire('Error', 'Gagal mendaftar, periksa koneksi internet.', 'error');
+          btn.innerText = 'Daftarkan Sekarang'; btn.disabled = false; 
+        });
     }
 
-    // Login & Logout
+    // Pendaftaran Bulk Excel
+    function prosesUploadExcel() {
+      const fileInput = document.getElementById('fileUpload');
+      const btn = document.getElementById('btnUpload');
+      if (!fileInput.files.length) return Swal.fire('Perhatian', 'Pilih file Excel terlebih dahulu!', 'warning');
+      
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membaca...'; btn.disabled = true;
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const excelData = XLSX.utils.sheet_to_json(firstSheet);
+        
+        const formattedData = excelData.map(row => ({
+          olahraga: row['Olahraga'] || 'Badminton', kategori: row['Kategori'] || '-',
+          timA: row['Tim A'] || '-', timB: row['Tim B'] || '-'
+        }));
+
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Mengunggah...';
+        const fd = new FormData();
+        fd.append('action', 'bulk_registrasi'); fd.append('data', JSON.stringify(formattedData));
+
+        fetch(scriptURL, { method: 'POST', body: fd })
+          .then(() => {
+            Swal.fire('Sukses!', 'Data Excel berhasil diunggah dan masuk antrean.', 'success');
+            fileInput.value = ''; btn.innerHTML = '<i class="fa-solid fa-file-excel"></i> Upload Excel'; btn.disabled = false;
+            switchView('homeSection');
+          })
+          .catch(() => {
+            Swal.fire('Error', 'Gagal mengunggah file ke database.', 'error');
+            btn.innerHTML = '<i class="fa-solid fa-file-excel"></i> Upload Excel'; btn.disabled = false;
+          });
+      };
+      reader.readAsArrayBuffer(fileInput.files[0]);
+    }
+
+    // Autentikasi
     function prosesLogin() {
       const btn = document.getElementById('btnLogin');
       btn.innerText = 'Mengecek...'; btn.disabled = true;
@@ -221,28 +332,37 @@
       fetch(scriptURL, { method: 'POST', body: fd })
         .then(res => res.json())
         .then(data => {
-          if (data.result === 'success') { showAdmin('trackerSection'); } 
-          else { alert('Username/Password salah!'); btn.innerText = 'Masuk'; btn.disabled = false; }
+          if (data.result === 'success') { showAdmin('trackerSection'); Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Login Berhasil', showConfirmButton: false, timer: 1500}); } 
+          else { Swal.fire('Akses Ditolak', 'Username atau Password salah!', 'error'); btn.innerText = 'Masuk'; btn.disabled = false; }
         });
     }
     function logout() { document.getElementById('username').value = ''; document.getElementById('password').value = ''; switchView('homeSection'); }
 
-    // Pencatat Skor
+    // Skor Tracker
     function updateScore(team, pt) {
       if (team === 'A') { scoreA = Math.max(0, scoreA + pt); document.getElementById('scoreA').innerText = scoreA; } 
       else { scoreB = Math.max(0, scoreB + pt); document.getElementById('scoreB').innerText = scoreB; }
     }
     function resetScore() { scoreA = 0; scoreB = 0; document.getElementById('scoreA').innerText = 0; document.getElementById('scoreB').innerText = 0; }
+    
     function simpanSkor() {
       const btn = document.getElementById('btnSimpan');
-      btn.innerText = 'Menyimpan...'; btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
       const fd = new FormData();
       fd.append('action', 'simpan'); fd.append('olahraga', document.getElementById('trkOlahraga').value); fd.append('timA', document.getElementById('trkTimA').value || 'Tim A'); fd.append('timB', document.getElementById('trkTimB').value || 'Tim B'); fd.append('skorA', scoreA); fd.append('skorB', scoreB);
+      
       fetch(scriptURL, { method: 'POST', body: fd })
-        .then(() => { alert('Skor tersimpan!'); resetScore(); btn.innerText = '💾 Simpan Hasil'; btn.disabled = false; });
+        .then(() => { 
+          Swal.fire('Tersimpan!', 'Skor akhir berhasil direkap.', 'success'); 
+          resetScore(); btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Hasil Akhir'; btn.disabled = false; 
+        })
+        .catch(() => {
+          Swal.fire('Gagal', 'Tidak dapat menyimpan skor.', 'error');
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Hasil Akhir'; btn.disabled = false;
+        });
     }
 
-    // Dashboard
+    // Fetch Dashboard
     function loadDashboard() {
       document.getElementById('loadingData').style.display = 'block'; document.getElementById('dashboardContent').style.display = 'none';
       fetch(scriptURL).then(res => res.json()).then(data => {
@@ -252,14 +372,14 @@
         document.getElementById('kpiTotal').innerText = data.totalPertandingan; document.getElementById('kpiPopuler').innerText = data.terpopuler;
         
         if (chartPieInstance) chartPieInstance.destroy();
-        chartPieInstance = new Chart(document.getElementById('pieChart').getContext('2d'), { type: 'doughnut', data: { labels: data.grafikLabel, datasets: [{ data: data.grafikData, backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'] }] } });
+        chartPieInstance = new Chart(document.getElementById('pieChart').getContext('2d'), { type: 'doughnut', data: { labels: data.grafikLabel, datasets: [{ data: data.grafikData, backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'], borderWidth: 0 }] }, options: { cutout: '70%' } });
 
         const tbAntrean = document.getElementById('tabelPendaftar'); tbAntrean.innerHTML = '';
-        data.antrean.forEach(r => tbAntrean.innerHTML += `<tr><td><span class="badge bg-secondary">${r.olahraga}</span><br><small>${r.kategori}</small></td><td class="fw-bold">${r.timA}</td><td class="fw-bold">${r.timB}</td></tr>`);
-        if(data.antrean.length === 0) tbAntrean.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Belum ada pendaftar baru</td></tr>';
+        data.antrean.forEach(r => tbAntrean.innerHTML += `<tr><td><span class="badge bg-primary">${r.olahraga}</span></td><td><small class="text-secondary fw-bold">${r.kategori}</small></td><td class="fw-bold">${r.timA}</td><td class="fw-bold">${r.timB}</td></tr>`);
+        if(data.antrean.length === 0) tbAntrean.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Belum ada pendaftar baru dalam antrean.</td></tr>';
 
         const tbRiwayat = document.getElementById('tabelRiwayat'); tbRiwayat.innerHTML = '';
-        data.riwayat.forEach(r => tbRiwayat.innerHTML += `<tr><td><span class="badge bg-light text-dark">${r.waktu}</span><br><small>${r.olahraga}</small></td><td>${r.timA}</td><td>${r.timB}</td><td class="fw-bold text-primary fs-5 text-end">${r.skor}</td></tr>`);
+        data.riwayat.forEach(r => tbRiwayat.innerHTML += `<tr><td><span class="badge bg-light text-dark shadow-sm">${r.waktu}</span><br><small class="text-secondary">${r.olahraga}</small></td><td class="fw-bold text-dark">${r.timA}</td><td class="text-muted text-center fs-6">vs</td><td class="fw-bold text-dark">${r.timB}</td><td class="fw-bold text-primary fs-5 text-end">${r.skor}</td></tr>`);
       });
     }
   </script>
